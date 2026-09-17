@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ткани и материалы СКАУТ</title>
+
+<style>
+/* ============================================================
+   1. ПЕРЕМЕННЫЕ И БАЗОВЫЕ СТИЛИ
+   ============================================================ */
+:root{
+  --bg:        #f7f8fa;
+  --card:      #ffffff;
+  --text:      #2b2f36;
+  --muted:     #6b7280;
+  --accent:    #1e4d3b;
+  --accent-lt: #e8f1ec;
+  --border:    #e5e7eb;
+  --radius:    14px;
+  --shadow:    0 1px 2px rgba(16,24,40,.04), 0 4px 14px rgba(16,24,40,.06);
+  --shadow-hv: 0 2px 4px rgba(16,24,40,.05), 0 8px 24px rgba(16,24,40,.09);
+}
+
+*{box-sizing:border-box; margin:0; padding:0;}
+
+body{
+  font-family: Inter, Roboto, "Segoe UI", system-ui, -apple-system, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+  padding: 32px 16px 64px;
+}
+
+.wrap{ max-width: 860px; margin: 0 auto; }
+
+/* ============================================================
+   2. ШАПКА
+   ============================================================ */
+header{ text-align: center; margin-bottom: 28px; }
+
+h1{
+  font-size: clamp(22px, 5vw, 34px);
+  font-weight: 700;
+  letter-spacing: -.02em;
+  color: var(--accent);
+}
+
+.subtitle{ margin-top: 8px; font-size: 15px; color: var(--muted); }
+
+.search{
+  display: block;
+  width: 100%;
+  max-width: 420px;
+  margin: 22px auto 0;
+  padding: 12px 16px;
+  font: inherit;
+  font-size: 15px;
+  color: var(--text);
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  outline: none;
+  transition: border-color .18s, box-shadow .18s;
+}
+.search:focus{ border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-lt); }
+.search::placeholder{ color: #9ca3af; }
+
+/* ============================================================
+   3. КАРТОЧКА-АККОРДЕОН
+   ============================================================ */
+.card{
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  margin-bottom: 12px;
+  overflow: hidden;
+  transition: box-shadow .2s, border-color .2s;
+}
+.card:hover{ box-shadow: var(--shadow-hv); }
+.card.open{ border-color: #cfe0d7; }
+
+.card-head{
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 18px 20px;
+  font: inherit;
+  text-align: left;
+  background: none;
+  border: 0;
+  cursor: pointer;
+  color: var(--text);
+}
+
+.name{ flex: 1; font-size: 17px; font-weight: 600; }
+
+.type{ display: block; margin-top: 3px; font-size: 13px; font-weight: 400; color: var(--muted); }
+
+.chevron{
+  flex-shrink: 0;
+  width: 22px;
+  height: 22px;
+  color: var(--accent);
+  transition: transform .28s ease;
+}
+.card.open .chevron{ transform: rotate(180deg); }
+
+.details{ max-height: 0; overflow: hidden; transition: max-height .32s ease; }
+.details-inner{ padding: 4px 20px 22px; border-top: 1px solid var(--border); margin-top: 2px; }
+
+.grid{ display: grid; grid-template-columns: 1fr; gap: 16px; margin-top: 16px; }
+@media (min-width: 640px){
+  .grid{ grid-template-columns: 1fr 1fr; }
+  .grid .full{ grid-column: 1 / -1; }
+}
+
+.label{
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .07em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 5px;
+}
+
+.value{ font-size: 15px; }
+
+ul.list{ list-style: none; }
+ul.list li{ position: relative; padding-left: 18px; font-size: 15px; margin-bottom: 4px; }
+ul.list li::before{ position: absolute; left: 0; font-weight: 700; }
+ul.pros li::before{ content: "+"; color: #2f7d5c; }
+
+.tag{
+  display: inline-block;
+  padding: 2px 8px;
+  margin-left: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #8a6d1f;
+  background: #fdf5e0;
+  border-radius: 20px;
+  white-space: nowrap;
+}
+
+.empty{ text-align: center; padding: 48px 20px; color: var(--muted); font-size: 15px; }
+
+footer{
+  margin-top: 40px;
+  padding-top: 20px;
+  border-top: 1px solid var(--border);
+  font-size: 13px;
+  color: var(--muted);
+  text-align: center;
+}
+footer strong{ color: var(--accent); }
+</style>
+</head>
+
+<body>
+<div class="wrap">
+
+  <header>
+    <h1>Ткани и материалы СКАУТ</h1>
+    <p class="subtitle">Справочник для подбора ткани под задачу — верхняя одежда, утеплитель, подкладка, декор</p>
+    <input class="search" id="search" type="search" placeholder="Поиск по названию, составу, применению..." autocomplete="off">
+  </header>
+
+  <main id="list"></main>
+
+  <footer>
+    <p><strong>СКАУТ</strong> &middot; Справочник тканей и материалов</p>
+    <p style="margin-top:6px">Характеристики носят справочный характер. Для торговых названий (&laquo;Wolker&raquo;, &laquo;Кошачий глаз&raquo;, &laquo;Карелия&raquo;) состав уточняйте у поставщика перед закупкой партии.</p>
+  </footer>
+
+</div>
+
+<script>
+/* ============================================================
+   4. ДАННЫЕ О ТКАНЯХ
+   Чтобы добавить или изменить ткань — правьте только этот массив.
+   guess: true означает, что состав указан предположительно.
+   ============================================================ */
+const fabrics = [
+  {
+    name: "RIP-STOP",
+    type: "Плащёвка (лёгкая)",
+    composition: "100% нейлон или полиэстер, 30-70 г/м². Армирующая сетка из утолщённых нитей каждые 5-8 мм (клетка)",
+    guess: false,
+    properties: "Лёгкая, ветрозащитная, прочная на разрыв. Сама по себе не дышит",
+    usage: "Пуховики, ветровки, спальники, тенты, флаги",
+    pros: ["Не рвётся дальше надреза", "Малый вес", "Недорогая"]
+  },
+  {
+    name: "RIP-STOP флис",
+    type: "Флис с армированием",
+    composition: "100% полиэстер, 200-300 г/м². Армирующая сетка рипстоп снаружи или в структуре полотна",
+    guess: false,
+    properties: "Тёплый, дышащий, ветростойкий, износостойкий",
+    usage: "Утеплитель, подкладка курток, толстовки, тактическая одежда",
+    pros: ["Держит форму — сетка не даёт растягиваться", "Тёплый", "Дышит"]
+  },
+  {
+    name: "Дюспо-флис",
+    type: "Комбинированный материал (плащёвка + флис)",
+    composition: "Дюспо — предположительно нейлон/полиэстер с мембраной, 40-60 г/м², плюс флис (100% полиэстер)",
+    guess: true,
+    properties: "Ветро- и влагозащита снаружи, тепло и дышимость внутри. Двусторонняя функциональность",
+    usage: "Демисезонные утеплённые куртки, ветровки с подкладкой",
+    pros: ["Защита снаружи и тепло внутри в одном материале"]
+  },
+  {
+    name: "Торнадо-флис",
+    type: "Флис (ворсистый, объёмный)",
+    composition: "Предположительно 100% полиэстер, 250-350 г/м², двухсторонний ворс",
+    guess: true,
+    properties: "Очень тёплый, мягкий, объёмный, дышащий",
+    usage: "Утеплитель зимней одежды, халаты, детская одежда",
+    pros: ["Высокая теплоизоляция", "Приятная тактильность"]
+  },
+  {
+    name: "Торнадо",
+    type: "Плащёвка плотная (основа под мембрану)",
+    composition: "Предположительно 100% полиэстер с PU-пропиткой, 110-160 г/м²",
+    guess: true,
+    properties: "Ветрозащита, водоотталкивающая пропитка, держит форму, слабая дышимость",
+    usage: "Верхняя одежда: куртки, штаны, комбинезоны, спецодежда",
+    pros: ["Плотная", "Формоустойчивая", "Защищает от ветра и влаги"]
+  },
+  {
+    name: "Сорочка",
+    type: "Сорочечная ткань (хлопок / смесовая)",
+    composition: "Хлопок 100% либо 65% полиэстер + 35% хлопок. Поплин или бязь, 110-130 г/м²",
+    guess: false,
+    properties: "Дышит, гигроскопична, приятна к телу, держит глажку (в смесовом варианте)",
+    usage: "Рубашки, сорочки, школьная форма, блузки",
+    pros: ["Комфорт", "Дышимость", "Доступная цена"]
+  },
+  {
+    name: "Сетка",
+    type: "Трикотаж (сетчатое полотно)",
+    composition: "Полиэстер/нейлон, возможен эластан. 60-120 г/м²",
+    guess: true,
+    properties: "Лёгкая, дышащая, эластичная",
+    usage: "Подкладка, спортивная одежда, вставки, карманы для вентиляции",
+    pros: ["Хорошая воздухопроницаемость", "Малый вес"]
+  },
+  {
+    name: "Вискоза",
+    type: "Искусственное волокно (целлюлоза)",
+    composition: "100% вискоза, возможны добавки. 90-140 г/м²",
+    guess: false,
+    properties: "Дышит, гигроскопична, мягкая, хорошо драпируется, приятный блеск",
+    usage: "Блузки, платья, подкладка, лёгкая летняя одежда",
+    pros: ["Комфорт, близкий к хлопку", "Красивый внешний вид", "Доступная цена"]
+  },
+  {
+    name: "Wolker",
+    type: "Плащёвка тонкая (торговое название)",
+    composition: "Предположительно полиамид/полиэстер с покрытием, 50-90 г/м²",
+    guess: true,
+    properties: "Лёгкая, ветрозащитная, мягкая на ощупь, матовая",
+    usage: "Куртки, ветровки, спортивная одежда, подкладка",
+    pros: ["Малый вес", "Приятная матовость", "Ветрозащита"]
+  },
+  {
+    name: "Кошачий глаз",
+    type: "Плащёвка / костюмная ткань с декором (торговое название)",
+    composition: "Предположительно полиэстер с покрытием, эффект переливчатого блеска при определённом освещении",
+    guess: true,
+    properties: "Декоративный эффект, держит форму, слабая дышимость",
+    usage: "Верхняя одежда, костюмы, декор, сценические костюмы",
+    pros: ["Выразительный внешний вид", "Прочная"]
+  },
+  {
+    name: "Карелия",
+    type: "Плащёвка (торговое название)",
+    composition: "Предположительно полиэстер с водоотталкивающей пропиткой, 90-130 г/м²",
+    guess: true,
+    properties: "Ветро- и влагозащита, плотность, формоустойчивость",
+    usage: "Куртки, спецодежда, жилеты, плащи",
+    pros: ["Доступная цена", "Прочная", "Не боится влаги"]
+  }
+];
+
+/* ============================================================
+   5. ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ
+   ============================================================ */
+
+// Экранирование HTML — чтобы символы <, >, & в тексте не ломали разметку
+function esc(str){
+  return String(str)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
+}
+
+// Массив строк превращает в список <li>
+function listItems(arr){
+  return arr.map(function(item){ return "<li>" + esc(item) + "</li>"; }).join("");
+}
+
+/* ============================================================
+   6. HTML ОДНОЙ КАРТОЧКИ
+   ============================================================ */
+function cardHTML(f){
+  // Плашка «предположительно» — только если guess = true
+  var guessTag = f.guess ? '<span class="tag">предположительно</span>' : "";
+
+  return [
+  '<article class="card">',
+
+    '<button class="card-head" type="button" aria-expanded="false">',
+      '<span class="name">',
+        esc(f.name),
+        '<span class="type">' + esc(f.type) + '</span>',
+      '</span>',
+      // Стрелка вниз; при раскрытии поворачивается на 180 градусов через CSS
+      '<svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor"',
+      ' stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">',
+        '<polyline points="6 9 12 15 18 9"></polyline>',
+      '</svg>',
+    '</button>',
+
+    '<div class="details">',
+      '<div class="details-inner">',
+        '<div class="grid">',
+
+          '<div class="full">',
+            '<div class="label">Тип материала</div>',
+            '<div class="value">' + esc(f.type) + '</div>',
+          '</div>',
+
+          '<div class="full">',
+            '<div class="label">Состав</div>',
+            '<div class="value">' + esc(f.composition) + guessTag + '</div>',
+          '</div>',
+
+          '<div class="full">',
+            '<div class="label">Свойства</div>',
+            '<div class="value">' + esc(f.properties) + '</div>',
+          '</div>',
+
+          '<div class="full">',
+            '<div class="label">Применение</div>',
+            '<div class="value">' + esc(f.usage) + '</div>',
+          '</div>',
+
+          '<div class="full">',
+            '<div class="label">Плюсы</div>',
+            '<ul class="list pros">' + listItems(f.pros) + '</ul>',
+          '</div>',
+
+        '</div>',
+      '</div>',
+    '</div>',
+
+  '</article>'
+  ].join("");
+}
+
+/* ============================================================
+   7. РЕНДЕРИНГ СПИСКА
+   ============================================================ */
+var listEl = document.getElementById("list");
+
+function render(items){
+  if(!items.length){
+    listEl.innerHTML = '<div class="empty">Ничего не найдено. Попробуйте другое слово.</div>';
+    return;
+  }
+  // Склеиваем HTML всех карточек в одну строку
+  listEl.innerHTML = items.map(cardHTML).join("");
+  bindEvents(); // после вставки в DOM навешиваем обработчики
+}
+
+/* ============================================================
+   8. АККОРДЕОН
+   Несколько карточек можно держать открытыми одновременно —
+   они не закрывают друг друга.
+   ============================================================ */
+function bindEvents(){
+  var heads = document.querySelectorAll(".card-head");
+
+  for(var i = 0; i < heads.length; i++){
+    heads[i].addEventListener("click", function(){
+      var btn     = this;
+      var card    = btn.closest(".card");
+      var details = card.querySelector(".details");
+      var isOpen  = card.classList.contains("open");
+
+      if(isOpen){
+        // Закрытие: сначала фиксируем текущую высоту, потом обнуляем.
+        // Без этого переход от auto к 0 не анимируется.
+        details.style.maxHeight = details.scrollHeight + "px";
+        requestAnimationFrame(function(){
+          details.style.maxHeight = "0px";
+        });
+        card.classList.remove("open");
+        btn.setAttribute("aria-expanded", "false");
+      } else {
+        // Открытие: высота по фактическому содержимому
+        card.classList.add("open");
+        btn.setAttribute("aria-expanded", "true");
+        details.style.maxHeight = details.scrollHeight + "px";
+
+        // После анимации снимаем ограничение по высоте, чтобы при
+        // изменении ширины окна блок не обрезался
+        details.addEventListener("transitionend", function handler(e){
+          if(e.propertyName === "max-height" && card.classList.contains("open")){
+            details.style.maxHeight = "none";
+          }
+          details.removeEventListener("transitionend", handler);
+        });
+      }
+    });
+  }
+}
+
+/* ============================================================
+   9. ПОИСК
+   Ищет по названию, типу, составу, свойствам, применению
+   и плюсам.
+   ============================================================ */
+var searchEl = document.getElementById("search");
+
+searchEl.addEventListener("input", function(){
+  var q = searchEl.value.trim().toLowerCase();
+
+  if(!q){ render(fabrics); return; }
+
+  var filtered = fabrics.filter(function(f){
+    var haystack = [
+      f.name, f.type, f.composition, f.properties, f.usage,
+      f.pros.join(" ")
+    ].join(" ").toLowerCase();
+
+    return haystack.indexOf(q) !== -1;
+  });
+
+  render(filtered);
+});
+
+/* ============================================================
+   10. ПЕРВИЧНЫЙ ЗАПУСК
+   ============================================================ */
+render(fabrics);
+</script>
+</body>
+</html>
